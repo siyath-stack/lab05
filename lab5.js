@@ -37,7 +37,30 @@ and explore the HTML DOM!
  * -- If the return value is false, print "Credit Card Number is Invalid!" to the output element. * 
  */
 function activateButton(){
-    /* write your code here! */
+    const algorithm = document.getElementById("algorithm");
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    const button = document.getElementById("submit");
+
+    button.addEventListener("click", () => {
+        const selectedAlgorithm = algorithm.value;
+        const number = input.valueAsNumber;
+
+        if (selectedAlgorithm === "pyramid") {
+            output.innerText = number <= 10 ? pyramid(number) : "Input is too large!";
+        } else if (selectedAlgorithm === "pyramidPair") {
+            output.innerText = number <= 10 ? pyramidPair(number) : "Input is too large!";
+        } else if (selectedAlgorithm === "luhnsAlgo") {
+            const rawInput = input.value.trim();
+            if (rawInput === "" || !Number.isFinite(number) || !Number.isInteger(number)) {
+                output.innerText = "Invalid Input!";
+            } else if (luhnsAlgo(number)) {
+                output.innerText = "Credit Card Number is Valid!";
+            } else {
+                output.innerText = "Credit Card Number is Invalid!";
+            }
+        }
+    });
 }
  
 
@@ -53,7 +76,15 @@ function activateButton(){
  * @return {number []} an array containing every other digit in the input number, starting from the end.
  */
 function extractOddDigits( number ) {
-    /* write your code here! */
+    const digits = [];
+    let remaining = Math.abs(number);
+
+    do {
+        digits.push(remaining % 10);
+        remaining = Math.floor(remaining / 100);
+    } while (remaining > 0);
+
+    return digits;
 }
 
 
@@ -71,7 +102,15 @@ function extractOddDigits( number ) {
  * starting from the second to last.
  */
 function doubleEvenDigits( number ) {
-    /* write your code here! */
+    const digits = [];
+    let remaining = Math.floor(Math.abs(number) / 10);
+
+    while (remaining > 0) {
+        digits.push((remaining % 10) * 2);
+        remaining = Math.floor(remaining / 100);
+    }
+
+    return digits;
 }
 
 
@@ -86,7 +125,15 @@ function doubleEvenDigits( number ) {
  * @return {number} the sum of all digits in number
  */
 function addAllDigits( number ) {
-    /* write your code here! */
+    let remaining = Math.abs(number);
+    let sum = 0;
+
+    while (remaining > 0) {
+        sum += remaining % 10;
+        remaining = Math.floor(remaining / 10);
+    }
+
+    return sum;
 }
 
 
@@ -102,8 +149,19 @@ function addAllDigits( number ) {
  * @return {boolean} true if input is valid credit card number, else false
  */
 function luhnsAlgo( number ) {
-    /* write your code here! */
+    const oddDigits = extractOddDigits(number);
+    const doubledEvenDigits = doubleEvenDigits(number);
+    let sum = 0;
 
+    for (const digit of oddDigits) {
+        sum += addAllDigits(digit);
+    }
+
+    for (const digit of doubledEvenDigits) {
+        sum += addAllDigits(digit);
+    }
+
+    return sum % 10 === 0;
 }
 
 /**
@@ -120,7 +178,19 @@ function luhnsAlgo( number ) {
  * @return {string} a string representation of a pyramid with height rows
  */
 function pyramid( height ) {
-    /* write your code here! */
+    let result = "";
+
+    for (let row = 1; row <= height; row += 1) {
+        for (let space = row; space < height; space += 1) {
+            result += " ";
+        }
+        for (let star = 0; star < row; star += 1) {
+            result += "*";
+        }
+        result += "\n";
+    }
+
+    return result;
 }
 
 
@@ -138,10 +208,31 @@ function pyramid( height ) {
  * @return {string} a string representation of a pyramid with height rows
  */
 function pyramidPair( height ) {
-    /* write your code here! */
+    let result = "";
+
+    for (let row = 1; row <= height; row += 1) {
+        for (let space = row; space < height; space += 1) {
+            result += " ";
+        }
+        for (let star = 0; star < row; star += 1) {
+            result += "*";
+        }
+        result += " ";
+        for (let star = 0; star < row; star += 1) {
+            result += "*";
+        }
+        for (let space = row; space < height; space += 1) {
+            result += " ";
+        }
+        result += "\n";
+    }
+
+    return result;
 }
 
 
-//You will need to comment out line the line below to run your code within the browser!!
-//This line is required to run vitest, however.
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", activateButton);
+}
+
 export { luhnsAlgo, pyramid, pyramidPair, extractOddDigits, doubleEvenDigits, addAllDigits }
